@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>Set up SSH</title>
+    <style>
+      pre {
+          margin-bottom: 0;
+          margin-left: -3.67em;
+      }
+    </style>
+</head>
+<body>
+  <h2>Set up SSH config (and proxy)</h2>
+  <hr/>
+  <a href='./'>Go back</a>
+  <p>
+    You are here because you'd like to know how to set up your <tt>ssh</tt> config (and proxy).
+  </p>
+  <p>
+    Some reasons to do the first:
+    <ul>
+      <li>
+        You don't want to use your password
+      </li>
+      <li>
+        You want to set up a shorter alias
+      </li>
+    </ul>
+    And the second:
+    <ul>
+      <li>
+        You want to proxy jump to avoid a VPN
+      </li>
+    </ul>
+  </p>
+  <hr/>
+  <p>
+    Here are the steps to go password-less:
+    <ul>
+      
+      <li>
+        On your local machine, perform <tt>cat ~/.ssh/id_rsa.pub</tt> and copy the results to your clipboard.
+      </li>
+      
+      <li>
+        <tt>ssh</tt> into your remote host with your usual method. Perform <tt>mkdir -p ~/.ssh</tt> and then append the contents of your clipboard to <tt>~/.ssh/authorized_keys</tt> using a method of your choice. An easy way to do this is <tt>echo 'content' >> ~/.ssh/authorized_keys</tt>, replacing <tt>content</tt> as necessary.
+      </li>
+
+      <li>
+        At this point, you should be able to <tt>ssh</tt> into your remote and it should not ask for a password. Feel free to try it out now. Note that this is different if you are the root user, and requires some extra steps, explained well <a href='https://askubuntu.com/questions/497895/permission-denied-for-rootlocalhost-for-ssh-connection'>here</a>.
+      </li>
+      
+    </ul>
+  </p>
+
+  <p>
+    Next up, here are the steps to add an alias for your config:
+
+    <ul>
+      <li>
+        On your local machine, open up <tt>~/.ssh/config</tt> with your favorite text editor. For me, this means <tt>emacs ~/.ssh/config</tt>.
+      </li>
+
+      <li>
+        The simplest configuration looks like this:
+        <pre
+          >
+          Host lnxsrv07
+            User arteen
+            HostName lnxsrv07.seas.ucla.edu
+        </pre>
+        <tt>Host</tt> specifies the alias. <tt>User</tt> the user to log-in for. <tt>HostName</tt> is the endpoint. For example, where before you had typed <tt>ssh arteen@lnxsrv07.seas.ucla.edu</tt>, you can now type <tt>ssh lnxsrv07</tt>.
+      </li>
+    </ul>
+  </p>
+
+  <p>
+    Finally, for those of you who'd like to bypass a VPN, I neither condone, admonish, or take any responsibility for this behavior:
+    <ul>
+      <li>
+        Simply add the following line to the previous configuration:
+        <pre
+          >
+            ProxyJump server
+        </pre>
+        where <tt>server</tt> is a remote host within the network you would like to access that does not require the usage of a VPN.
+      </li>
+      <li>
+        You can now perform <tt>ssh lnxsrv07</tt> from anywhere you like, without VPN or password.
+      </li>
+    </ul>
+  </p>
+
+  <p>
+    Thanks for reading.
+  </p>
+</body>
+</html>

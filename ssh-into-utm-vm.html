@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>SSH into UTM VM</title>
+</head>
+<body>
+  <h2>SSH into UTM VM</h2>
+  <hr/>
+  <a href='./'>Go back</a>
+  <p>
+    You are here because you'd like to know how to <tt>ssh</tt> into a UTM VM.
+  </p>
+  <hr/>
+  <p>
+    Here are the steps:
+    <ul>
+      
+      <li>
+        Click on your target VM in the
+        <a href='https://mac.getutm.app/'>UTM</a> UI.
+      </li>
+      
+      <li>
+        Navigate to the top right button (Settings) and click it.
+      </li>
+
+      <li>
+        Go to Network and set Network Mode to Emulated VLAN.
+      </li>
+
+      <li>
+        Click on Port Forwarding (it should show up under Network).
+      </li>
+
+      <li>
+        Click 'New' and select Protocol: TCP. Set up Guest Port (second field) of 22 and Host Port (fourth field) of your choice (I use 2222).
+      </li>
+
+      <li>
+        Start up the VM. Inside, you can run <tt>sudo systemctl start sshd</tt> and verify that the ssh daemon is running with <tt>sudo systemctl status sshd</tt>.
+      </li>
+
+      <li>
+        You can now run <tt>ssh user@localhost -p 2222</tt>, replacing <tt>user</tt> and <tt>2222</tt> as necessary in order to <tt>ssh</tt> into the VM.
+      </li>
+
+      <li>
+        As a bonus, you can also <tt>scp</tt> files into the home directory (or one of your choice) with <tt>scp -P 2222 file user@localhost:~</tt> where you specify <tt>2222</tt>, <tt>file</tt> and <tt>user</tt> as necessary.
+      </li>
+      
+    </ul>
+  </p>
+
+  <p>
+    Thanks for reading.
+  </p>
+</body>
+</html>

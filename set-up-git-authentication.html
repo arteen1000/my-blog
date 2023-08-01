@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>Set up Git Authentication</title>
+    <link rel='stylesheet' href='shared-styles.css'>
+</head>
+<body>
+  <h2>Set up Git Authentication (on the command line)</h2>
+  <hr/>
+  <a href='./'>Go back</a>
+  <p>
+    You are here because you'd like to know how to set up <tt>git</tt> authentication (on the command line).
+  </p>
+  <p>
+    What does this mean? It means you probably just got an error like this:
+    <pre>
+      $ git push -u origin main
+        Username for 'https://github.com': arteen1000
+        Password for 'https://arteen1000@github.com': 
+        remote: Support for password authentication was
+        removed on August 13, 2021.
+        ...
+        fatal: Authentication failed for ...
+    </pre>
+  </p>
+  <hr/>
+  <p>
+    Here are the steps to fix this (and never have to type your password again):
+    <ul>
+
+      <li>
+        First, check for existing ssh keys. This is as simple as checking if <tt>~/.ssh</tt> has any files starting with <tt>id_</tt> (by default, they are named by that convention). If you do not have an ssh key, then simply run <tt>ssh-keygen -t ed25519 -C 'name@email.com'</tt> and press <tt>&lt;RET&gt;</tt> at every prompt. Ideally, you'd use the same email as your GitHub account, replacing <tt>name@email.com</tt>.
+      </li>
+      <li>
+        You should now have a public/private key-pair inside <tt>~/.ssh</tt>. For me, the keys are at <tt>~/.ssh/id_ed25519</tt> and <tt>~/.ssh/id_ed25519.pub</tt>, where the one ending with <tt>.pub</tt> is my public key.
+      </li>
+
+      <li>
+        Now type <tt>emacs ~/.ssh/config</tt>. Make sure you install <tt>emacs</tt> at this step if you don't already have it, unless you want to resort to a more inferior text editor.
+      </li>
+
+      <li>
+        Type the following into your configuration:
+        <pre>
+          Host github.com
+            AddKeysToAgent yes
+            IdentityFile ~/.ssh/id_ed25519
+        </pre>
+        You can replace <tt>~/.ssh/id_ed25519</tt> as necessary with the corresponding private key.
+      </li>
+      <li>
+        Copy the contents of your public key (<tt>~/.ssh/id_ed25519.pub</tt>) to your clipboard and navigate to <a href='https://github.com'>GitHub</a> -> Profile (top right) -> Settings -> SSH and GPG keys. Click on New SSH Key, give it a descriptive title, and paste the contents of your public key into the Key field. Click Add SSH key.
+      </li>
+
+      <li>
+        Verify the connection using <tt>ssh -T git@github.com</tt>, typing <tt>yes</tt> at the prompt.
+      </li>
+
+      <li>
+        Make sure that you are using SSH for the remote URL (as opposed to HTTPS). If you are not, you can change the remote for your repository to do so using <tt>git remote set-url origin 'git@github.com:user/repository.git'</tt>. Replace <tt>git@github.com:user/repository.git</tt> as necessary.
+      </li>
+
+      <li>
+        Finally, we reap the fruits of our labor. You can now do <tt>git push -u origin main</tt> to push your <tt>main</tt> branch to GitHub. Congratulations.
+      </li>
+      
+    </ul>
+  </p>
+  
+  <p>
+    Thanks for reading.
+  </p>
+</body>
+</html>

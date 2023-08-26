@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>A Non-Multiplicative Approach to n Choose 2</title>
+    <link rel='stylesheet' href='shared-styles.css'>
+</head>
+<body>
+  <h2>A Non-Multiplicative Approach to n Choose 2</h2>
+  <span>08/26/2023</span>
+  <hr/>
+  <a href='./'>Go back</a>
+  <p>
+    As I was falling asleep last night, I was thinking back on the coding assessment that I'd taken earlier in the day.
+  </p>
+  <p>
+    There was a problem in there which was a bit tricky, at first glance. It was asking (without giving too much away) for the number of pairs (i, j) in a strictly increasing sequence of finite size where i &le; j. I thought it was a very cool problem. My solution to this part (in Python) had looked something like:
+  </p>
+  <pre>
+    numPairs += math.comb(len(seq), 2)
+    numPairs += len(seq)
+  </pre>
+  <p>
+    I hadn't really known how the combination worked, since I had never really paid much attention to it, and it had mostly been a nuisance to me during my discrete mathematics course, and I didn't really care to know, but I've been getting more interested in math lately, so I was up late thinking about it.
+  </p>
+  <p>
+    The way the solution had worked above was that <tt>math.comb(len(seq), 2)</tt> gave the number of distinct pairs in the sequence, of which, since the sequence was strictly increasing, that would be equal to the number of paris such that i &lt; j.
+  </p>
+  <p>
+    Upon realizing that that solution wasn't fully adequate on its own (after running test cases and noticing that the number of pairs I had returned was exactly the length of the sequence less than the correct amount), I realized that the line <tt>numPairs += len(seq)</tt> was necessary due to each integer i in the sequence being able to be paired with itself, since i &le; i.
+  </p>
+  <p>
+    With that, the solution was complete, but I was still up late thinking -- was the correct (or rather, intended) way to do that with the combination?
+  </p>
+  <p>
+    You see, the way my brain works, I take in patterns and I re-organize them to fit what I am given. I was thinking through different patterns I'd seen in the past.
+  </p>
+  <p>
+    I knew that I knew that the number of distinct pairs in any sequence is all pairs with indices such that i &lt; j. This was a tidbit I recalled from one of my Physics courses, when the professor was describing how the number of interactions between protons at a close distance is nearly the square of the number of protons. Specifically, numbering the protons in a strictly increasing manner, you can take all distinct pairs by noting the interactions only between those where i &lt; j.
+  </p>
+  <p>
+    This number of pairs is exactly what is given by <tt>math.comb(len(seq), 2)</tt> or, more mathematically, <tt>nCk<tt> where <tt>k = 2</tt> (and <tt>n = len(seq)</tt>.
+  </p>
+  <p>
+    Programatically, a brute-force (or, shall we instead say, simple) approach to calculating this number would be something like (in Python):
+  </p>
+  <pre>
+    for i in range(n):
+      for j in range(i + 1, n):
+        numPairs += 1
+  </pre>
+  <p>
+    or perhaps in pseudo-code:
+  </p>
+    <pre>
+      from i (inclusive) -> n (exclusive)
+        from i + 1 (inclusive) -> n (exclusive):
+          numPairs += 1
+    </pre>
+  <p>
+    And in English:
+  </p>
+  <p>
+    What is happening here is that the inner loop runs 1 less than the outer loop on every iteration. The result of that is that the statement being executed in the
+    inner loop executes on each full iteration of the outer loop 1 less times, per iteration. Perhaps more simply:
+  <p>
+    <pre>
+      n - 1 -> n - 2 -> n - 3 -> ... -> 2 -> 1
+    </pre>
+  <p>
+    Where each integer in the above sequence denotes how many times the inner statement <tt>numPairs += 1</tt> gets executed on each iteration of the outer loop (on the last iteration, it does not execute, and on the first, it executes <tt>n - 1</tt> times.
+  </p>
+  <p>
+    Not coincidenatally, the summation of this result is exactly the result <tt>n Choose 2</tt> or <tt>math.comb(n, 2)</tt>, though perhaps horribly inefficient.
+  </p>
+  <p>
+    Recall that all this pondering began because I was wondering whether I was intended to use <tt>math.comb</tt> in the first place in solving this problem, or if I were to come up with my own solution. Well, if I was going to come up with a list of pairs, I'd do it the above way. This can be demonstrated like so, where imagine we have the sequence <tt>seq = [0, 1, 2, 3, 4]</tt> of length 5, and we want the pairs such that i &lt; j. In Python:
+  </p>
+  <pre>
+    for i in range(len(seq)):
+      for j in range(i + 1, len(seq)):
+        print(f'{i} {j}')
+  </pre>
+  <p>
+    results in:
+  </p>
+  <pre>
+    0 1
+    0 2
+    0 3
+    0 4
+    1 2
+    1 3
+    1 4
+    2 3
+    2 4
+    3 4
+  </pre>
+  <p>
+    You'll notice there's 10 pairs there. Exactly the result of <tt>5 Choose 2</tt>. In other words, it is all distinct pairs, where you cannot take the same element to be in the same pair. However, if you wanted to do so, where the restriction imposed (as in the problem) is i &le; j, then you could simply do something like:
+  </p>
+  <pre>
+    for i in range(len(seq)):
+      for j in range(i, len(seq)):
+        print(f'{i} {j}')
+  </pre>
+  <p>
+    where the output will be:
+  </p>
+  <pre>
+    0 0
+    0 1
+    ...
+  </pre>
+  <p>
+    numbering exactly 14, solving the initial problem without the usage of <tt>math.comb</tt> (had we added a counter inside that loop). However, I was curious to see a pattern, and it turned out not only to be extraordinarly simple but also quite fascinating. See if you can see it yourself before I spell it out (at this point I had a candle, a paper, and a pencil out):
+  </p>
+  <pre>
+    0 choose 2 = 0
+    1 choose 2 = 0
+    2 choose 2 = 1
+    3 choose 2 = 3
+    4 choose 2 = 6
+    5 choose 2 = 10
+    6 choose 2 = 15
+    7 choose 2 = 20
+  </pre>
+  <pre>
+    0
+       | 0
+    0       | 1
+       | 1
+    1       | 1
+       | 2
+    3       | 1
+       | 3
+    6       | 1
+       | 4
+    10      | 1
+       | 5
+    15      | 1
+       | 6
+    20
+  </pre>
+  <p>
+    A constant second difference. I thought that was pretty cool. I wanted to see if there was a sequence that could be easily derived. So I looked at the base case, where <tt>n = 0</tt> (really, this is the only necessary base case for the sequence to work). So here's how I did it:
+  </p>
+  <pre>
+    a<sub>0</sub> = 0
+    a<sub>1</sub> = 0 + 0
+    a<sub>2</sub> = 0 + 0 + 1
+    a<sub>3</sub> = 0 + 0 + 1 + 2
+    a<sub>4</sub> = 0 + 0 + 1 + 2 + 3
+    a<sub>5</sub> = 0 + 0 + 1 + 2 + 3 + 4
+    a<sub>6</sub> = 0 + 0 + 1 + 2 + 3 + 4 + 5
+    a<sub>7</sub> = 0 + 0 + 1 + 2 + 3 + 4 + 5 + 6
+    ...
+    a<sub>n + 1</sub> = a<sub>n</sub> + n
+  </pre>
+  <p>
+    I'm not going to prove this by induction, but this is from here on going to be known as Arteen's Sequence Theorem, where the n<sup>th</sup> element represents the result of <tt>n choose 2</tt>. Anyway, here's a function I wrote on my notebook at 12:30am to compute this, given a non-negative integer n.
+  </p>
+  <pre>
+    def nChoose2(n):
+      i = 0
+      v = 0
+      while i < n:
+        v += i            
+        i += 1
+      return v
+                </pre>
+  <p>
+    So there you go, dynamic programming, before I've even taken an algorithms course. What you see up there is a linear-time solution to a combinatorial problem with no expensive multiplication needed.
+    I tried to figure out the sequence for <tt>n Choose 3</tt>, but at this point, my genius was exhausted (or perhaps it was simply 1 in the morning).
+  </p>
+  <p>
+    I did recognize that for any any sequence <tt>n Choose k</tt> there is a constant <tt>k<sup>th</sup></tt> difference though. I thought that was a pretty cool discovery.
+  </p>
+  <p>
+    At this point I texted my friend, told him about my sequence and discovery (and also my Copyright claim on it -- Arteen's Sequence Theorem -- licensed under BSD-4 Clause), and he goes "oh this is because like, degree k polynomial will always have constant k<sup>th</sup> difference."
+  </p>
+  <p>
+    At this point, dissapointed in my own lack of mathematical knowledge, I interrogated him on how he knew that. He couldn't really say, but, upon my research, this pattern shows up in the triangle of some guy named Pascal.
+  </p>
+  <p>
+    Dissapointed, I went to bed, wishing I was born 500 years ago so I could've discover the triangle first.
+  </p>
+</body>
+</html>
